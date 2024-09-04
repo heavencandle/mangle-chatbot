@@ -21,7 +21,7 @@ class ChatCallbackHandler(BaseCallbackHandler):
         self.message_box = st.empty()
 
     def on_llm_end(self, *args, **kwargs):
-        save_message(self.message, "ai")
+        save_message(self.message, "assistant")
 
     def on_llm_new_token(self, token, *args, **kwargs):
         self.message += token
@@ -65,6 +65,7 @@ def embed_file(file):
 
 def save_message(message, role):
     st.session_state["message"].append({"message": message, "role": role})
+    
 
 def send_message(message, role, save=True):
     if role=="assistant":
@@ -102,7 +103,10 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-st.session_state["message"]=[]
+try:
+    st.session_state["message"][0] = st.session_state["message"][0]
+except:
+    st.session_state["message"]=[]
 p_selected = None
 file = None
 
@@ -131,9 +135,7 @@ if p_selected:
 
 if file:
     retriever = embed_file(file)
-    send_message(f"I've got my magnifying glass ready! Ask away and let's uncover the answers together!", "assistant", save=False)
-else:
-    st.session_state["message"]=[]
+    send_message(f"I've got my magnifying glass ready! Ask away and let's uncover the answers together!", "assistant", save=True)
 
 paint_history()
 message = st.chat_input("Ask anything about your file...")
@@ -159,8 +161,12 @@ if message:
             | prompt 
             | llm
         )
+
+    
     with st.chat_message("assistant", avatar="./image/detective.png"):
         response = chain.invoke(message)
+    # response = chain.invoke(message)
+    # send_message(response, "assistant")
 
 # *Image of Mangle by [Yurang](https://www.instagram.com/yurang_official/?hl=kom).*
         
