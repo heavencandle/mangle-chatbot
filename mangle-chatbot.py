@@ -14,6 +14,7 @@ st.set_page_config(
     page_title="DocumentDetective",
     page_icon="🐻",
 )
+
 class ChatCallbackHandler(BaseCallbackHandler):
     message = ""
     
@@ -103,10 +104,8 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-try:
-    st.session_state["message"][0] = st.session_state["message"][0]
-except:
-    st.session_state["message"]=[]
+if "message" not in st.session_state:
+    st.session_state["message"] = []
 p_selected = None
 file = None
 
@@ -165,8 +164,6 @@ if message:
     
     with st.chat_message("assistant", avatar="./image/detective.png"):
         response = chain.invoke(message)
-    # response = chain.invoke(message)
-    # send_message(response, "assistant")
 
 # *Image of Mangle by [Yurang](https://www.instagram.com/yurang_official/?hl=kom).*
         
